@@ -1,7 +1,12 @@
 import { avg, count, eq, sql, sum } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
-import { portfolioRatings, portfolioVisitors } from '@/lib/db/schema'
+import {
+  portfolioRatings,
+  portfolioVisitors,
+  portfolioVisitEvents,
+} from '@/lib/db/schema'
+
 
 export type PortfolioStats = {
   viewers: number
@@ -42,7 +47,19 @@ export async function recordVisit(visitorId: string) {
       },
     })
 }
-
+export async function recordVisitEvent(
+  visitorId: string,
+  page: string,
+  referrer: string | null,
+  userAgent: string | null,
+) {
+  await db.insert(portfolioVisitEvents).values({
+    visitorId,
+    page,
+    referrer,
+    userAgent,
+  })
+}
 export async function saveRating(visitorId: string, rating: number) {
   await db
     .insert(portfolioRatings)

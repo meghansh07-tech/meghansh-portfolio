@@ -1,12 +1,24 @@
 import { NextResponse } from 'next/server'
-import { getOrCreateVisitorId, getStats, recordVisit, saveRating } from '@/lib/stats'
+import {
+  getOrCreateVisitorId,
+  getStats,
+  recordVisit,
+  recordVisitEvent,
+  saveRating,
+} from '@/lib/stats'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const { id } = await getOrCreateVisitorId()
     await recordVisit(id)
+    await recordVisitEvent(
+  id,
+  '/',
+  request.headers.get('referer'),
+  request.headers.get('user-agent'),
+)
     return NextResponse.json(await getStats(id), { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     console.error('[stats] GET failed', error)
