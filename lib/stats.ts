@@ -19,6 +19,11 @@ export type PortfolioStats = {
 const VISITOR_COOKIE = 'ms_visitor'
 const ONE_YEAR = 60 * 60 * 24 * 365
 
+export function isAnalyticsAdmin(token: string | null) {
+  const adminToken = process.env.ANALYTICS_ADMIN_TOKEN
+  return Boolean(adminToken && token === adminToken)
+}
+
 export async function getOrCreateVisitorId() {
   const store = await cookies()
   const existing = store.get(VISITOR_COOKIE)?.value
